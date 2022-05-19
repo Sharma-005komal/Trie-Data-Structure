@@ -1,0 +1,118 @@
+/*********************Longest Prefix with all string ------ Complete String***************************/
+
+#include <bits/stdc++.h>
+using namespace std;
+
+struct Node
+{
+    Node* link[26];
+    bool flag = false;
+    
+    bool containkey(char ch)
+    {
+        return (link[ch-'a'] != NULL);
+    }
+    
+    void put(char ch, Node* node)
+    {
+        link[ch-'a'] = node;
+    }
+    
+    Node* get(char ch)
+    {
+        return link[ch-'a'];
+    }
+    
+    void setEnd()
+    {
+        flag = true;
+    }
+    
+    bool isEnd()
+    {
+        return flag;
+    }
+};
+
+class Trie
+{
+    private:
+       Node* root;
+    public:
+       //Initializing trie data structure
+       Trie()
+       {
+           root = new Node();
+       }
+       
+       //Insert elements in Trie
+       void insert(string word)
+       {
+           Node* node = root;
+           for(int i=0; i<word.length(); i++)
+           {
+               if(!node->containkey(word[i]))
+               {
+                   node->put(word[i], new Node());
+               }
+               node = node->get(word[i]);
+           }
+           node->setEnd();
+       }
+       
+       bool checkAllPrefixExsists(string word)
+       {
+           Node* node = root;
+           bool flag = true;
+           for(int i=0; i<word.length(); i++)
+           {
+               if(node->containkey(word[i]))
+               {
+                   node = node->get(word[i]);
+                   flag = flag & node->isEnd();
+               }
+               else
+               {
+                   return false;
+               }
+           }
+           return flag;
+       }
+};
+
+int main()
+{
+    Trie t;
+    vector<string> a = {"n", "ninja", "ni", "nin", "ninj", "ninga"};
+    for(auto word:a)
+    {
+        t.insert(word);
+    }
+    
+    string longest = "";
+    for(auto word:a)
+    {
+        if(t.checkAllPrefixExsists(word))
+        {
+            if(word.size() > longest.size())
+            {
+                longest = word;
+            }
+            else if(word.size() == longest.size() && word < longest) //lexiographically order
+            {
+                longest = word;
+            }
+        }
+    }
+    if(longest == "")
+    {
+        cout<<"None"<<endl;
+    }
+    else
+    {
+        cout<<longest<<endl;
+    }
+    
+    return 0;
+    
+}
